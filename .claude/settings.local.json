@@ -1,0 +1,34 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir \"C:\\Users\\icos\\00_DEPLOY\\highlineadventures.co\\a3h_app\\hla-dataspur-v1\\src\\app\\dashboard\" /S /B)",
+      "Bash(npx prisma migrate dev:*)",
+      "Bash(npm run:*)",
+      "Bash(dir \"C:\\Users\\icos\\00_DEPLOY\\highlineadventures.co\\a3h_app\\hla-dataspur-v1\\src\\app\\api\\projects\" /B)",
+      "Bash(node:*)",
+      "Bash(curl:*)",
+      "Bash(npx prisma generate:*)",
+      "Bash(npx tsc:*)",
+      "Bash(taskkill:*)",
+      "Bash(npx prisma:*)",
+      "Read(c:\\Users\\icos\\00_DEPLOY\\highlineadventures.co\\a3h_app\\hla-dataspur-v1\\_TEMP/**)",
+      "Read(c:\\Users\\icos\\00_DEPLOY\\highlineadventures.co\\a3h_app\\hla-dataspur-v1\\_TEMP/**)",
+      "Read(c:\\Users\\icos\\00_DEPLOY\\highlineadventures.co\\a3h_app\\hla-dataspur-v1\\_TEMP/**)",
+      "Read(c:\\Users\\icos\\00_DEPLOY\\highlineadventures.co\\a3h_app\\hla-dataspur-v1\\_TEMP/**)",
+      "Read(c:\\Users\\icos\\00_DEPLOY\\highlineadventures.co\\a3h_app\\hla-dataspur-v1\\_TEMP/**)",
+      "Bash(psql:*)",
+      "Bash(tasklist:*)",
+      "Read(/C:\\Users\\icos\\00_DEPLOY\\summit-guardian-com\\hla-dataspur-v1\\_TEMP/**)",
+      "Read(/C:\\Users\\icos\\00_DEPLOY\\summit-guardian-com\\hla-dataspur-v1/**)",
+      "Read(/C:\\Users\\icos\\00_DEPLOY\\summit-guardian-com\\hla-dataspur-v1/**)",
+      "Read(/C:\\Users\\icos\\00_DEPLOY\\summit-guardian-com\\hla-dataspur-v1/**)",
+      "Read(/C:\\Users\\icos\\00_DEPLOY\\summit-guardian-com\\hla-dataspur-v1/**)",
+      "Bash(dir:*)",
+      "Read(/C:\\Users\\icos\\00_DEPLOY\\summit-guardian-com\\hla-dataspur-v1\\_TEMP/**)",
+      "Read(/C:\\Users\\icos\\00_DEPLOY\\summit-guardian-com\\hla-dataspur-v1\\_TEMP/**)",
+      "Read(/C:\\Users\\icos\\00_DEPLOY\\summit-guardian-com\\hla-dataspur-v1/**)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
