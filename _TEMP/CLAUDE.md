@@ -5,45 +5,44 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Project Overview
 **UPDATED 2025-08-30**: Full-stack Next.js 14 project planning application implementing the original responsive navigation template design. The application maintains 100% visual fidelity to the original HTML template while adding modern React architecture, TypeScript support, Prisma database integration, and Railway deployment configuration. Local PostgreSQL database now connected and operational with DataSpur branding.
 
-THE MAKE IT WORK FIRST FIELD GUIDE
+# THE MAKE IT WORK FIRST MANIFESTO
 
-CORE TRUTH
-Defensive code before functionality is theater.
-Prove it works. Then protect it.
+## Core Truth
 
-THE RULES
-1. Build the Happy Path First – Code that DOES the thing
-2. No Theoretical Defenses – Naked first version
-3. Learn from Real Failures – Fix reality, not ghosts
-4. Guard Only What Breaks – Add checks only for facts
-5. Keep the Engine Visible – Action, not paranoia
+Every line of defensive code you write before proving your feature works is a lie you tell yourself about problems that don't exist.
 
-ANTI-PATTERNS TO BURN
-❌ Fortress Validation
-❌ Defensive Exit Theater
-❌ Connection State Paranoia
+## The Philosophy
 
-PATTERNS TO LIVE BY
-✅ Direct Execution
-✅ Natural Failure
-✅ Continuous Progress
+### 1. Build the Happy Path FIRST
+Write code that does the thing. Not code that checks if it can do the thing. Not code that validates before doing the thing. Code that DOES THE THING.
 
-THE TEST
-Can someone grok your code in 10 seconds?
-YES → You lived the manifesto
-NO  → Delete defenses
+### 2. No Blockers. No Validation. No Defensive Coding.
+Your first version should be naked functionality. Raw execution. Pure intent made manifest in code.
 
-THE PROMISE
-Readable. Debuggable. Maintainable. Honest.
+### 3. Let It Fail Naturally
+When code fails, it should fail because of real problems, not artificial guards. Real failures teach. Defensive failures hide.
 
-THE METAPHOR
-Don’t bolt on airbags before the engine runs.
-First: make it move.
-Then: guard against real crashes.
+### 4. Add Guards ONLY for Problems That Actually Happen
+That null check? Did it actually blow up in production? No? Delete it.
+That validation? Did a user actually send bad data? No? Delete it.
+That try-catch? Did it actually throw? No? Delete it.
 
-MAKE IT WORK FIRST.
-MAKE IT WORK ALWAYS.
-GUARDS EARN THEIR KEEP.
+### 5. Keep the Engine Visible
+You should be able to read code and immediately see what it does. Not what it's defending against. Not what it's validating. What it DOES.
+
+## The Anti-Patterns We Reject
+
+### ❌ Fortress Validation
+```javascript
+function doThing(x) {
+  if (!x) throw new Error('x is required');
+  if (typeof x !== 'string') throw new Error('x must be string');
+  if (x.length < 3) throw new Error('x too short');
+  if (x.length > 100) throw new Error('x too long');
+  // 50 more lines of validation...
+  
+  return x.toUpperCase(); // The actual work, buried
+}
 
 **Original Template**: Preserved in `_TEMP/template.html` (formerly `index.html`)  
 **Current Architecture**: Next.js 14 + TypeScript + Prisma + PostgreSQL  

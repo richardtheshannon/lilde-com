@@ -2,24 +2,9 @@
      # TODO_MVP
      
      Read CLAUDE.md and TODO_MVP.md in the _TEMP directory. Then proceed with implementing these steps from TODO_MVP.md: 
-     Phase 1: Initialize Git and Push to GitHub. 
+    │ Phase 3: Deploy to Railway 
      Mark what's done when done.
      
-     
-     │ Phase 1: Initialize Git and Push to GitHub                                     │
-     │                                                                                │
-     │ 1. Initialize Git repository (git init)                                        │
-     │ 2. Update .gitignore to include Next.js build artifacts (.next, out, etc.)     │
-     │ 3. Create initial commit with all project files                                │
-     │ 4. Create new GitHub repository                                                │
-     │ 5. Add GitHub remote and push code                                             │
-     │                                                                                │
-     │ Phase 2: Prepare for Railway Deployment                                        │
-     │                                                                                │
-     │ 1. Create .env.example file with template variables (without sensitive values) │
-     │ 2. Update README with deployment instructions                                  │
-     │ 3. Ensure all database migrations are ready                                    │
-     │ 4. Test production build locally (npm run build && npm start)                  │
      │                                                                                │
      │ Phase 3: Deploy to Railway                                                     │
      │                                                                                │
