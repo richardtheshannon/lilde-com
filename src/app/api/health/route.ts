@@ -1,25 +1,26 @@
 import { NextResponse } from 'next/server'
+import { prisma } from '@/lib/prisma'
 
 export async function GET() {
-  // Simple health check that doesn't require database
-  // Once database is configured, you can uncomment the DB check below
-  
-  const health = {
-    status: 'healthy',
+  const health: any = {
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || 'development',
     uptime: process.uptime()
   }
 
-  // Optional: Check database connection when configured
-  // try {
-  //   const { prisma } = await import('@/lib/prisma')
-  //   await prisma.$queryRaw`SELECT 1`
-  //   health.database = 'connected'
-  // } catch (error) {
-  //   health.database = 'disconnected'
-  //   // Don't fail health check if DB is not configured yet
-  // }
-
-  return NextResponse.json(health)
+  try {
+    // Check database connection
+    await prisma.$queryRaw`SELECT 1`
+    health.status = 'healthy'
+    health.database = 'connected'
+    
+    return NextResponse.json(health)
+  } catch (error) {
+    health.status = 'unhealthy'
+    health.database = 'disconnected'
+    health.error = error instanceof Error ? error.message : 'Database connection failed'
+    
+    // Return 503 Service Unavailable when database is down
+    return NextResponse.json(health, { status: 503 })
+  }
 }
