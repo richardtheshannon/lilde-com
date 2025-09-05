@@ -135,7 +135,7 @@ const TaskList: React.FC<TaskListProps> = ({ projectId }) => {
                   )}
                   
                   <div className="flex items-center gap-4 text-xs text-gray-500">
-                    <span>Due: {formatDate(task.dueDate)}</span>
+                    <span>Due: {formatDate(task.dueDate || null)}</span>
                     {task.assignee && (
                       <span>Assigned to: {task.assignee.name || task.assignee.email}</span>
                     )}

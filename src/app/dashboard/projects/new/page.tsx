@@ -48,7 +48,7 @@ export default function NewProjectPage() {
         website: formData.website || null,
         status: formData.status as 'PLANNING' | 'IN_PROGRESS' | 'ON_HOLD' | 'COMPLETED' | 'CANCELLED',
         priority: formData.priority as 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT',
-        projectType: formData.projectType as 'PERSONAL_PROJECT' | 'CLIENT_PROJECT' | 'INTERNAL_PROJECT' | 'RESEARCH' | 'OTHER' | 'DEVELOPMENT' | 'DESIGN' | 'MARKETING',
+        projectType: formData.projectType as 'DEVELOPMENT' | 'DESIGN' | 'MARKETING' | 'RESEARCH' | 'OTHER',
         startDate: formData.startDate || null,
         endDate: formData.endDate || null
       }
@@ -123,9 +123,6 @@ export default function NewProjectPage() {
                   <option value="DESIGN">Design</option>
                   <option value="MARKETING">Marketing</option>
                   <option value="RESEARCH">Research</option>
-                  <option value="PERSONAL_PROJECT">Personal Project</option>
-                  <option value="CLIENT_PROJECT">Client Project</option>
-                  <option value="INTERNAL_PROJECT">Internal Project</option>
                   <option value="OTHER">Other</option>
                 </select>
               </div>

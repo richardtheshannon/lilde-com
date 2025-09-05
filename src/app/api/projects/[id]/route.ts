@@ -14,27 +14,6 @@ export async function GET(
       include: {
         owner: {
           select: { id: true, name: true, email: true }
-        },
-        members: {
-          include: {
-            user: {
-              select: { id: true, name: true, email: true }
-            }
-          }
-        },
-        tasks: {
-          orderBy: { createdAt: 'desc' }
-        },
-        timeline: {
-          orderBy: { date: 'asc' }
-        },
-        contacts: true,
-        links: true,
-        _count: {
-          select: { 
-            tasks: true,
-            members: true 
-          }
         }
       }
     })
@@ -82,12 +61,6 @@ export async function PUT(
       include: {
         owner: {
           select: { id: true, name: true, email: true }
-        },
-        _count: {
-          select: { 
-            tasks: true,
-            members: true 
-          }
         }
       }
     })

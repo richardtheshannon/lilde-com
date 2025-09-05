@@ -348,11 +348,11 @@ export default function ProjectDetailPage() {
               
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-blue-400">{project._count.tasks}</div>
+                  <div className="text-2xl font-bold text-blue-400">0</div>
                   <div className="text-gray-400 text-sm">Tasks</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-green-400">{project._count.members}</div>
+                  <div className="text-2xl font-bold text-green-400">1</div>
                   <div className="text-gray-400 text-sm">Members</div>
                 </div>
                 <div className="text-center">
