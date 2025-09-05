@@ -6,16 +6,20 @@
 
 In Railway, go to your **Application Service** (NOT the database service) and set these environment variables:
 
-1. **DATABASE_URL**
+1. **PORT**
+   - Set to: `8081` (or your desired port if different from default 8080)
+   - Required if you're running multiple services or changed Railway's port setting
+
+2. **DATABASE_URL**
    - Use Railway's reference variable to connect to your Postgres service
    - Set value to: `${{Postgres.DATABASE_URL}}`
    - Note: Replace "Postgres" with your actual database service name if different
 
-2. **NEXTAUTH_URL**
+3. **NEXTAUTH_URL**
    - Set to: `https://highline-dataspur-production.up.railway.app`
    - Important: Include the `https://` protocol
 
-3. **NEXTAUTH_SECRET**
+4. **NEXTAUTH_SECRET**
    - Use this generated secure key: `E91Rh4yDEa3E2I6baENZ7o0B8IIthORlQrwxSJrx+c4=`
    - Or generate your own using: `openssl rand -base64 32`
 
@@ -28,6 +32,7 @@ In Railway, go to your **Application Service** (NOT the database service) and se
 5. Add/Update these variables:
 
 ```env
+PORT=8081
 DATABASE_URL=${{Postgres.DATABASE_URL}}
 NEXTAUTH_URL=https://highline-dataspur-production.up.railway.app
 NEXTAUTH_SECRET=E91Rh4yDEa3E2I6baENZ7o0B8IIthORlQrwxSJrx+c4=
