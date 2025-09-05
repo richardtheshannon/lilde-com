@@ -259,8 +259,8 @@ body {
     flex-direction: column;
     justify-content: flex-end;
     gap: 10px;
-    flex: 1;
-    padding-bottom: 55px;
+    flex-grow: 1;
+    padding-bottom: 75px; /* Increased padding to lift above mobile browser UI */
 }
 
 /* Header Area Container */
