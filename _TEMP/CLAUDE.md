@@ -1,3 +1,8 @@
+
+/* DO NOT REMOVE THE FOLLOWING PLACEHOLDER PROMPT:
+
+/*
+
 # CLAUDE.md
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
