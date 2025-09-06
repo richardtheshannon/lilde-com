@@ -35,9 +35,15 @@ const navItems: NavItem[] = [
   },
 ]
 
+type ModalView = 'menu' | 'appearance'
+type Theme = 'dark' | 'light' | 'system'
+
 export default function Sidebar() {
   const [isExpanded, setIsExpanded] = useState(false)
   const [activeSubNavs, setActiveSubNavs] = useState<Set<string>>(new Set())
+  const [showUserModal, setShowUserModal] = useState(false)
+  const [modalView, setModalView] = useState<ModalView>('menu')
+  const [theme, setTheme] = useState<Theme>('dark')
   const router = useRouter()
 
   // Load sidebar state from localStorage on component mount
@@ -48,6 +54,44 @@ export default function Sidebar() {
       setIsExpanded(expanded)
     }
   }, [])
+
+  // Load and apply theme on mount
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme') as Theme | null
+    if (savedTheme) {
+      setTheme(savedTheme)
+      applyTheme(savedTheme)
+    } else {
+      applyTheme('dark')
+    }
+  }, [])
+
+  const applyTheme = (selectedTheme: Theme) => {
+    const root = document.documentElement
+    
+    if (selectedTheme === 'system') {
+      const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+      root.setAttribute('data-theme', systemPrefersDark ? 'dark' : 'light')
+      
+      // Listen for system theme changes
+      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+      const handleChange = (e: MediaQueryListEvent) => {
+        if (theme === 'system') {
+          root.setAttribute('data-theme', e.matches ? 'dark' : 'light')
+        }
+      }
+      mediaQuery.addEventListener('change', handleChange)
+      return () => mediaQuery.removeEventListener('change', handleChange)
+    } else {
+      root.setAttribute('data-theme', selectedTheme)
+    }
+  }
+
+  const handleThemeChange = (newTheme: Theme) => {
+    setTheme(newTheme)
+    localStorage.setItem('theme', newTheme)
+    applyTheme(newTheme)
+  }
 
   const toggleMenu = () => {
     const newState = !isExpanded
@@ -85,10 +129,193 @@ export default function Sidebar() {
   }
 
   return (
-    <div 
-      className={`main-menu-sidebar ${isExpanded ? 'expanded' : ''}`}
-      id="mainMenuSidebar"
-    >
+    <>
+      {/* User Modal Overlay */}
+      {showUserModal && (
+        <>
+          <div 
+            className="modal-backdrop"
+            onClick={() => setShowUserModal(false)}
+          />
+          <div className="user-modal">
+            <div className="user-modal-header">
+              <div className="modal-header-left">
+                {modalView !== 'menu' && (
+                  <button 
+                    className="modal-back"
+                    onClick={() => setModalView('menu')}
+                  >
+                    <span className="material-symbols-outlined">arrow_back</span>
+                  </button>
+                )}
+                <h2>{modalView === 'menu' ? 'User Settings' : 'Appearance'}</h2>
+              </div>
+              <button 
+                className="modal-close"
+                onClick={() => setShowUserModal(false)}
+              >
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            </div>
+            <div className="user-modal-content">
+              {modalView === 'menu' ? (
+                <>
+                  <div className="user-profile-section">
+                    <div className="user-avatar">
+                      <span className="material-symbols-outlined">account_circle</span>
+                    </div>
+                    <div className="user-info">
+                      <h3>John Doe</h3>
+                      <p>john.doe@example.com</p>
+                    </div>
+                  </div>
+                  <div className="user-menu-section">
+                    <button className="user-menu-item">
+                      <span className="material-symbols-outlined">manage_accounts</span>
+                      <span>Edit Profile</span>
+                    </button>
+                    <button className="user-menu-item">
+                      <span className="material-symbols-outlined">notifications</span>
+                      <span>Notifications</span>
+                    </button>
+                    <button className="user-menu-item">
+                      <span className="material-symbols-outlined">security</span>
+                      <span>Security Settings</span>
+                    </button>
+                    <button 
+                      className="user-menu-item"
+                      onClick={() => setModalView('appearance')}
+                    >
+                      <span className="material-symbols-outlined">palette</span>
+                      <span>Appearance</span>
+                    </button>
+                    <button className="user-menu-item">
+                      <span className="material-symbols-outlined">language</span>
+                      <span>Language & Region</span>
+                    </button>
+                    <button className="user-menu-item">
+                      <span className="material-symbols-outlined">help</span>
+                      <span>Help & Support</span>
+                    </button>
+                    <div className="user-menu-divider"></div>
+                    <button className="user-menu-item logout">
+                      <span className="material-symbols-outlined">logout</span>
+                      <span>Sign Out</span>
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <div className="appearance-settings">
+                  <div className="settings-section">
+                    <h3>Theme</h3>
+                    <div className="theme-options">
+                      <button 
+                        className={`theme-option ${theme === 'dark' ? 'active' : ''}`}
+                        onClick={() => handleThemeChange('dark')}
+                      >
+                        <span className="material-symbols-outlined">dark_mode</span>
+                        <span>Dark</span>
+                      </button>
+                      <button 
+                        className={`theme-option ${theme === 'light' ? 'active' : ''}`}
+                        onClick={() => handleThemeChange('light')}
+                      >
+                        <span className="material-symbols-outlined">light_mode</span>
+                        <span>Light</span>
+                      </button>
+                      <button 
+                        className={`theme-option ${theme === 'system' ? 'active' : ''}`}
+                        onClick={() => handleThemeChange('system')}
+                      >
+                        <span className="material-symbols-outlined">computer</span>
+                        <span>System</span>
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <div className="settings-section">
+                    <h3>Accent Color</h3>
+                    <div className="color-options">
+                      <button className="color-option" style={{background: '#007AFF'}}></button>
+                      <button className="color-option" style={{background: '#34C759'}}></button>
+                      <button className="color-option" style={{background: '#FF3B30'}}></button>
+                      <button className="color-option" style={{background: '#FF9500'}}></button>
+                      <button className="color-option" style={{background: '#AF52DE'}}></button>
+                      <button className="color-option" style={{background: '#FFCC00'}}></button>
+                      <button className="color-option active" style={{background: '#FF6B6B'}}></button>
+                      <button className="color-option" style={{background: '#4ECDC4'}}></button>
+                    </div>
+                  </div>
+                  
+                  <div className="settings-section">
+                    <h3>Display</h3>
+                    <div className="display-settings">
+                      <div className="setting-item">
+                        <span>Compact Mode</span>
+                        <label className="toggle-switch">
+                          <input type="checkbox" />
+                          <span className="toggle-slider"></span>
+                        </label>
+                      </div>
+                      <div className="setting-item">
+                        <span>Show Animations</span>
+                        <label className="toggle-switch">
+                          <input type="checkbox" defaultChecked />
+                          <span className="toggle-slider"></span>
+                        </label>
+                      </div>
+                      <div className="setting-item">
+                        <span>High Contrast</span>
+                        <label className="toggle-switch">
+                          <input type="checkbox" />
+                          <span className="toggle-slider"></span>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="settings-section">
+                    <h3>Font Size</h3>
+                    <div className="font-size-selector">
+                      <button className="font-size-option">A-</button>
+                      <button className="font-size-option active">A</button>
+                      <button className="font-size-option">A+</button>
+                    </div>
+                  </div>
+                  
+                  <div className="settings-section">
+                    <h3>Sidebar</h3>
+                    <div className="display-settings">
+                      <div className="setting-item">
+                        <span>Auto-collapse on mobile</span>
+                        <label className="toggle-switch">
+                          <input type="checkbox" defaultChecked />
+                          <span className="toggle-slider"></span>
+                        </label>
+                      </div>
+                      <div className="setting-item">
+                        <span>Show icon labels</span>
+                        <label className="toggle-switch">
+                          <input type="checkbox" defaultChecked />
+                          <span className="toggle-slider"></span>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="settings-actions">
+                    <button className="btn-reset">Reset to Defaults</button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </>
+      )}
+      <div 
+        className={`main-menu-sidebar ${isExpanded ? 'expanded' : ''}`}
+        id="mainMenuSidebar"
+      >
       <div className="header-area">
         {isExpanded && (
           <div className="menu-header-expanded">
@@ -98,7 +325,13 @@ export default function Sidebar() {
             <button className="header-icon">
               <span className="material-symbols-outlined">info</span>
             </button>
-            <button className="header-icon">
+            <button 
+              className="header-icon"
+              onClick={() => {
+                setShowUserModal(true)
+                setModalView('menu')
+              }}
+            >
               <span className="material-symbols-outlined">person</span>
             </button>
           </div>
@@ -177,5 +410,6 @@ export default function Sidebar() {
         </div>
       </div>
     </div>
+    </>
   )
 }
