@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react'
 export default function Footer() {
   const [debugBordersEnabled, setDebugBordersEnabled] = useState(false)
   const [footerFixed, setFooterFixed] = useState(false)
+  const [drawerOpen, setDrawerOpen] = useState(false)
 
   const toggleDebugBorders = () => {
     const newState = !debugBordersEnabled
@@ -36,6 +37,10 @@ export default function Footer() {
     }
   }
 
+  const toggleDrawer = () => {
+    setDrawerOpen(!drawerOpen)
+  }
+
   // Check initial state on mount
   useEffect(() => {
     const hasDebugBorders = document.body.classList.contains('debug-borders-enabled')
@@ -56,30 +61,73 @@ export default function Footer() {
   }, [])
 
   return (
-    <footer className="footer">
-      <div className="footer-left">
-        <button className="footer-icon">
-          <span className="material-symbols-outlined">format_indent_increase</span>
-        </button>
+    <>
+      <footer className="footer">
+        <div className="footer-left">
+          <button className="footer-icon">
+            <span className="material-symbols-outlined">format_indent_increase</span>
+          </button>
+        </div>
+        <div className="footer-center">
+          <button className="footer-icon">
+            <span className="material-symbols-outlined">code</span>
+          </button>
+        </div>
+        <div className="footer-right">
+          <button className="footer-icon" onClick={toggleFooterFixed} title={footerFixed ? "Release Footer" : "Fix Footer"}>
+            <span className="material-symbols-outlined">place_item</span>
+          </button>
+          <button className="footer-icon" onClick={toggleDebugBorders} title={debugBordersEnabled ? "Hide Debug Borders" : "Show Debug Borders"}>
+            <span className="material-symbols-outlined">
+              {debugBordersEnabled ? 'border_outer' : 'border_style'}
+            </span>
+          </button>
+          <button className="footer-icon" onClick={toggleDrawer} title={drawerOpen ? "Close Drawer" : "Open Drawer"}>
+            <span className="material-symbols-outlined">{drawerOpen ? 'expand_circle_down' : 'expand_circle_up'}</span>
+          </button>
+        </div>
+      </footer>
+
+      {/* Bottom Drawer */}
+      <div className={`bottom-drawer ${drawerOpen ? 'drawer-open' : ''}`}>
+        <div className="drawer-header">
+          <h3>Quick Actions</h3>
+          <button className="drawer-close" onClick={toggleDrawer}>
+            <span className="material-symbols-outlined">close</span>
+          </button>
+        </div>
+        <div className="drawer-content">
+          <div className="drawer-grid">
+            <button className="drawer-action">
+              <span className="material-symbols-outlined">add_circle</span>
+              <span>New Project</span>
+            </button>
+            <button className="drawer-action">
+              <span className="material-symbols-outlined">task_alt</span>
+              <span>New Task</span>
+            </button>
+            <button className="drawer-action">
+              <span className="material-symbols-outlined">note_add</span>
+              <span>New Note</span>
+            </button>
+            <button className="drawer-action">
+              <span className="material-symbols-outlined">upload_file</span>
+              <span>Upload File</span>
+            </button>
+            <button className="drawer-action">
+              <span className="material-symbols-outlined">schedule</span>
+              <span>Schedule</span>
+            </button>
+            <button className="drawer-action">
+              <span className="material-symbols-outlined">settings</span>
+              <span>Settings</span>
+            </button>
+          </div>
+        </div>
       </div>
-      <div className="footer-center">
-        <button className="footer-icon">
-          <span className="material-symbols-outlined">code</span>
-        </button>
-      </div>
-      <div className="footer-right">
-        <button className="footer-icon" onClick={toggleFooterFixed} title={footerFixed ? "Release Footer" : "Fix Footer"}>
-          <span className="material-symbols-outlined">place_item</span>
-        </button>
-        <button className="footer-icon" onClick={toggleDebugBorders} title={debugBordersEnabled ? "Hide Debug Borders" : "Show Debug Borders"}>
-          <span className="material-symbols-outlined">
-            {debugBordersEnabled ? 'border_outer' : 'border_style'}
-          </span>
-        </button>
-        <button className="footer-icon">
-          <span className="material-symbols-outlined">expand_circle_up</span>
-        </button>
-      </div>
-    </footer>
+
+      {/* Drawer Backdrop */}
+      {drawerOpen && <div className="drawer-backdrop" onClick={toggleDrawer}></div>}
+    </>
   )
 }
