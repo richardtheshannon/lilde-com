@@ -7,11 +7,40 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum UserRole {
+  ADMIN
+  USER
+  VIEWER
+}
+
+enum ProjectStatus {
+  PLANNING
+  IN_PROGRESS
+  ON_HOLD
+  COMPLETED
+  CANCELLED
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum ProjectType {
+  DEVELOPMENT
+  DESIGN
+  MARKETING
+  RESEARCH
+  OTHER
+}
+
 model User {
   id        String   @id @default(cuid())
   email     String?  @unique
   name      String?
-  role      String   @default("USER")
+  role      UserRole @default(USER)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   
@@ -19,20 +48,20 @@ model User {
 }
 
 model Project {
-  id           String   @id @default(cuid())
+  id           String        @id @default(cuid())
   name         String
   description  String?
   projectGoal  String?
   projectValue Float?
   website      String?
-  status       String   @default("PLANNING")
-  priority     String   @default("MEDIUM")
-  projectType  String   @default("DEVELOPMENT")
+  status       ProjectStatus @default(PLANNING)
+  priority     Priority      @default(MEDIUM)
+  projectType  ProjectType   @default(DEVELOPMENT)
   startDate    DateTime?
   endDate      DateTime?
   budget       Float?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
   
   owner        User     @relation("ProjectOwner", fields: [ownerId], references: [id], onDelete: Cascade)
   ownerId      String

@@ -41,7 +41,7 @@ export interface ApiProject {
   // }
 }
 
-export interface CreateProjectData extends Partial<ApiProject> {
+export interface CreateProjectData extends Omit<Partial<ApiProject>, 'timelineEvents'> {
   timelineEvents?: TimelineEvent[]
 }
 
