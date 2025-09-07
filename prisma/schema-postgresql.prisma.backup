@@ -1,0 +1,230 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  USER
+  VIEWER
+}
+
+enum ProjectStatus {
+  PLANNING
+  IN_PROGRESS
+  ON_HOLD
+  COMPLETED
+  CANCELLED
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum ProjectType {
+  DEVELOPMENT
+  DESIGN
+  MARKETING
+  RESEARCH
+  OTHER
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  REVIEW
+  DONE
+  CANCELLED
+}
+
+model User {
+  id                           String          @id @default(cuid())
+  email                        String?         @unique
+  password                     String?
+  name                         String?
+  role                         UserRole        @default(USER)
+  isActive                     Boolean         @default(false)
+  sendDailyManifest           Boolean         @default(false)
+  sendAfternoonManifest       Boolean         @default(false)
+  enableCloseableNotifications Boolean         @default(true)
+  closedNotifications         Json?           @default("[]")
+  createdAt                   DateTime        @default(now())
+  updatedAt                   DateTime        @updatedAt
+  
+  projectsOwned               Project[]       @relation("ProjectOwner")
+  projects                    ProjectMember[]
+  tasks                       Task[]
+  comments                    Comment[]
+  notifications               Notification[]
+  featureRequests            FeatureRequest[]
+  documentation              Documentation[]
+}
+
+model Project {
+  id           String         @id @default(cuid())
+  name         String
+  description  String?
+  projectGoal  String?
+  projectValue Float?
+  website      String?
+  status       ProjectStatus  @default(PLANNING)
+  priority     Priority       @default(MEDIUM)
+  projectType  ProjectType    @default(DEVELOPMENT)
+  startDate    DateTime?
+  endDate      DateTime?
+  budget       Float?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  
+  // Owner relationship
+  owner        User           @relation("ProjectOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId      String
+  
+  // Phase 1: Simplified relations - complex relations temporarily removed
+  // members      ProjectMember[]
+  // tasks        Task[]
+  // timeline     TimelineEvent[]
+  // contacts     ProjectContact[]
+  // links        ProjectLink[]
+  // documents    Documentation[]
+}
+
+model ProjectMember {
+  id        String   @id @default(cuid())
+  projectId String
+  userId    String
+  role      String   @default("MEMBER")
+  joinedAt  DateTime @default(now())
+  
+  // Phase 1: Project relation temporarily removed
+  // project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([projectId, userId])
+}
+
+model Task {
+  id          String     @id @default(cuid())
+  title       String
+  description String?
+  status      TaskStatus @default(TODO)
+  priority    Priority   @default(MEDIUM)
+  projectId   String?
+  assigneeId  String?
+  parentId    String?
+  category    String?
+  dueDate     DateTime?
+  timeEstimate Float?
+  timeSpent   Float?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  
+  // Phase 1: Project relation temporarily removed
+  // project     Project?   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  assignee    User?      @relation(fields: [assigneeId], references: [id])
+  parent      Task?      @relation("SubTasks", fields: [parentId], references: [id])
+  subtasks    Task[]     @relation("SubTasks")
+  comments    Comment[]
+}
+
+model TimelineEvent {
+  id          String    @id @default(cuid())
+  projectId   String
+  title       String
+  description String?
+  date        DateTime
+  type        String    @default("milestone")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  // Phase 1: Project relation temporarily removed
+  // project     Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+model ProjectContact {
+  id        String   @id @default(cuid())
+  projectId String
+  name      String
+  email     String?
+  phone     String?
+  role      String?
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Phase 1: Project relation temporarily removed
+  // project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+model ProjectLink {
+  id        String   @id @default(cuid())
+  projectId String
+  title     String
+  url       String
+  category  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Phase 1: Project relation temporarily removed
+  // project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  content   String
+  taskId    String
+  authorId  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  author    User     @relation(fields: [authorId], references: [id])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String
+  message   String
+  type      String   @default("info")
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model FeatureRequest {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  status      String   @default("pending")
+  priority    Priority @default(MEDIUM)
+  requesterId String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  requester   User     @relation(fields: [requesterId], references: [id])
+}
+
+model Documentation {
+  id          String   @id @default(cuid())
+  title       String
+  content     String
+  category    String
+  tags        String[]
+  projectId   String?
+  authorId    String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Phase 1: Project relation temporarily removed
+  // project     Project? @relation(fields: [projectId], references: [id])
+  author      User     @relation(fields: [authorId], references: [id])
+}

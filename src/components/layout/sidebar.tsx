@@ -28,6 +28,7 @@ const navItems: NavItem[] = [
     icon: 'folder_open',
     subItems: [
       { title: 'All Projects', icon: 'view_list', href: '/dashboard/projects' },
+      { title: 'Create Project', icon: 'add_circle', href: '/dashboard/projects/new' },
       { title: 'Active Projects', icon: 'trending_up', href: '/dashboard/projects?status=active' },
       { title: 'Completed Projects', icon: 'task_alt', href: '/dashboard/projects?status=completed' },
       { title: 'On Hold', icon: 'pause_circle', href: '/dashboard/projects?status=on_hold' },

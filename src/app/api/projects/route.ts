@@ -53,44 +53,77 @@ export async function POST(request: NextRequest) {
   try {
     const session = await getSession()
     const body = await request.json()
-    const { name, description, projectGoal, projectValue, website, status, priority, projectType, startDate, endDate } = body
+    console.log('POST /api/projects - Request body:', JSON.stringify(body, null, 2))
+    console.log('POST /api/projects - Session:', session ? 'exists' : 'null')
+    const { name, description, projectGoal, projectValue, website, status, priority, projectType, startDate, endDate, timelineEvents } = body
 
     // Use session user ID or fallback to test user for development
     const userId = session?.user?.id || 'user_test_1' // For development testing
 
-    const project = await prisma.project.create({
-      data: {
-        name,
-        description,
-        projectGoal,
-        projectValue: projectValue ? parseFloat(projectValue) : null,
-        website,
-        status: status || 'PLANNING',
-        priority: priority || 'MEDIUM',
-        projectType: projectType || 'DEVELOPMENT',
-        startDate: startDate ? new Date(startDate) : null,
-        endDate: endDate ? new Date(endDate) : null,
-        ownerId: userId
-      },
-      include: {
-        owner: {
-          select: { id: true, name: true, email: true }
+    // Create project and timeline events in a transaction
+    const result = await prisma.$transaction(async (tx) => {
+      // Create the project first
+      const project = await tx.project.create({
+        data: {
+          name,
+          description,
+          projectGoal,
+          projectValue: projectValue ? parseFloat(projectValue) : null,
+          website,
+          status: status || 'PLANNING',
+          priority: priority || 'MEDIUM',
+          projectType: projectType || 'DEVELOPMENT',
+          startDate: startDate ? new Date(startDate) : null,
+          endDate: endDate ? new Date(endDate) : null,
+          ownerId: userId
         },
-        // Phase 1: Count fields removed due to simplified relations
-        // _count: {
-        //   select: { 
-        //     tasks: true,
-        //     members: true 
-        //   }
-        // }
+        include: {
+          owner: {
+            select: { id: true, name: true, email: true }
+          }
+        }
+      })
+
+      // Create timeline events if provided
+      let createdEvents: any[] = []
+      if (timelineEvents && Array.isArray(timelineEvents) && timelineEvents.length > 0) {
+        const timelineData = timelineEvents.map((event: any) => ({
+          projectId: project.id,
+          title: event.title,
+          description: event.description || null,
+          date: new Date(event.date),
+          type: event.type || 'milestone'
+        }))
+
+        // Create timeline events individually (SQLite compatibility)
+        for (const eventData of timelineData) {
+          const createdEvent = await tx.timelineEvent.create({
+            data: eventData
+          })
+          createdEvents.push(createdEvent)
+        }
       }
+
+      return { project, timelineEvents: createdEvents }
     })
 
-    return NextResponse.json(project, { status: 201 })
+    const { project, timelineEvents: createdTimelineEvents } = result
+
+    return NextResponse.json({ 
+      ...project, 
+      timelineEvents: createdTimelineEvents 
+    }, { status: 201 })
   } catch (error) {
     console.error('Projects POST error:', error)
+    console.error('Error details:', {
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined
+    })
     return NextResponse.json(
-      { error: "Failed to create project" },
+      { 
+        error: "Failed to create project", 
+        details: error instanceof Error ? error.message : 'Unknown error'
+      },
       { status: 500 }
     )
   }

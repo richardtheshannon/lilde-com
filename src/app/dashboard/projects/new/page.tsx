@@ -1,8 +1,12 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { useProjects } from '@/hooks/useProjects'
+import MarkdownUploader from '@/components/forms/MarkdownUploader'
+import TimelineGenerator from '@/components/timeline/TimelineGenerator'
+import TimelinePreview from '@/components/timeline/TimelinePreview'
+import { MarkdownParseResult, TimelineEvent } from '@/lib/markdownParser'
 
 export default function NewProjectPage() {
   const router = useRouter()
@@ -14,14 +18,16 @@ export default function NewProjectPage() {
     name: '',
     description: '',
     projectGoal: '',
-    projectValue: '',
-    website: '',
     status: 'PLANNING',
     priority: 'MEDIUM',
-    projectType: 'DEVELOPMENT',
-    startDate: '',
-    endDate: ''
+    projectType: 'DEVELOPMENT'
   })
+  
+  // Timeline generation state
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null)
+  const [markdownResult, setMarkdownResult] = useState<MarkdownParseResult | null>(null)
+  const [timelineEvents, setTimelineEvents] = useState<TimelineEvent[]>([])
+  const [timelineError, setTimelineError] = useState<string | null>(null)
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
@@ -44,13 +50,10 @@ export default function NewProjectPage() {
         name: formData.name,
         description: formData.description || null,
         projectGoal: formData.projectGoal || null,
-        projectValue: formData.projectValue ? parseFloat(formData.projectValue) : null,
-        website: formData.website || null,
         status: formData.status as 'PLANNING' | 'IN_PROGRESS' | 'ON_HOLD' | 'COMPLETED' | 'CANCELLED',
         priority: formData.priority as 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT',
         projectType: formData.projectType as 'DEVELOPMENT' | 'DESIGN' | 'MARKETING' | 'RESEARCH' | 'OTHER',
-        startDate: formData.startDate || null,
-        endDate: formData.endDate || null
+        timelineEvents: timelineEvents.length > 0 ? timelineEvents : undefined
       }
       
       await createProject(projectData)
@@ -66,59 +69,88 @@ export default function NewProjectPage() {
     router.back()
   }
 
+  // Timeline handling functions
+  const handleFileProcessed = (result: MarkdownParseResult, file: File) => {
+    setMarkdownResult(result)
+    setUploadedFile(file)
+    setTimelineError(null)
+  }
+
+  const handleFileError = (error: string) => {
+    setTimelineError(error)
+    setMarkdownResult(null)
+    setTimelineEvents([])
+  }
+
+  const handleFileClear = () => {
+    setUploadedFile(null)
+    setMarkdownResult(null)
+    setTimelineEvents([])
+    setTimelineError(null)
+  }
+
+  const handleTimelineGenerated = useCallback((events: TimelineEvent[]) => {
+    setTimelineEvents(events)
+  }, [])
+
+  const handleEventsModified = (events: TimelineEvent[]) => {
+    setTimelineEvents(events)
+  }
+
   return (
     <div className="safe-margin">
-      <div className="max-w-4xl mx-auto">
-        <div className="main-content-left">
-          <div className="flex items-center justify-between mb-6">
+      <div className="create-project-container">
+        <div className="flex items-center justify-between mb-6">
             <div>
-              <h1 className="text-3xl font-bold text-white mb-2">Create New Project</h1>
-              <p className="text-gray-400">Add a new project to your workspace</p>
+              <h1 className="create-project-title">Create New Project</h1>
+              <p className="create-project-subtitle">Add a new project to your workspace</p>
             </div>
             <button
               onClick={handleCancel}
-              className="text-gray-400 hover:text-white transition-colors"
+              className="create-project-close-btn"
             >
-              <span className="material-symbols-outlined text-2xl">close</span>
+              <span className="material-symbols-outlined">close</span>
             </button>
           </div>
 
           {error && (
-            <div className="bg-red-900 border border-red-700 rounded-lg p-4 mb-6">
-              <p className="text-red-100">{error}</p>
+            <div className="create-project-error">
+              <p>{error}</p>
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="bg-gray-800 rounded-lg p-6 space-y-6">
+          <form onSubmit={handleSubmit} className="create-project-form">
             {/* Basic Information */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-2">
-                  Project Name *
-                </label>
-                <input
-                  type="text"
-                  id="name"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Enter project name"
-                  required
-                />
-              </div>
+            <div className="form-section">
+              <h3 className="form-section-title">Basic Information</h3>
+              <div className="form-grid">
+                <div className="form-field">
+                  <label htmlFor="name" className="form-label">
+                    Project Name *
+                  </label>
+                  <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    className="form-input"
+                    placeholder="Enter project name"
+                    required
+                  />
+                </div>
 
-              <div>
-                <label htmlFor="projectType" className="block text-sm font-medium text-gray-300 mb-2">
-                  Project Type
-                </label>
-                <select
-                  id="projectType"
-                  name="projectType"
-                  value={formData.projectType}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
+                <div className="form-field">
+                  <label htmlFor="projectType" className="form-label">
+                    Project Type
+                  </label>
+                  <select
+                    id="projectType"
+                    name="projectType"
+                    value={formData.projectType}
+                    onChange={handleInputChange}
+                    className="form-input form-select"
+                  >
                   <option value="DEVELOPMENT">Development</option>
                   <option value="DESIGN">Design</option>
                   <option value="MARKETING">Marketing</option>
@@ -126,148 +158,133 @@ export default function NewProjectPage() {
                   <option value="OTHER">Other</option>
                 </select>
               </div>
+              
+              <div className="form-field">
+                <label htmlFor="projectGoal" className="form-label">
+                  Project Goal
+                </label>
+                <input
+                  type="text"
+                  id="projectGoal"
+                  name="projectGoal"
+                  value={formData.projectGoal}
+                  onChange={handleInputChange}
+                  className="form-input"
+                  placeholder="What do you want to achieve?"
+                />
+              </div>
+
+              <div className="form-field form-field-full">
+                <label htmlFor="description" className="form-label">
+                  Description
+                </label>
+                <textarea
+                  id="description"
+                  name="description"
+                  value={formData.description}
+                  onChange={handleInputChange}
+                  rows={3}
+                  className="form-input form-textarea"
+                  placeholder="Brief project description"
+                />
+              </div>
+            </div>
             </div>
 
-            <div>
-              <label htmlFor="description" className="block text-sm font-medium text-gray-300 mb-2">
-                Description
-              </label>
-              <textarea
-                id="description"
-                name="description"
-                value={formData.description}
-                onChange={handleInputChange}
-                rows={3}
-                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Brief project description"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="projectGoal" className="block text-sm font-medium text-gray-300 mb-2">
-                Project Goal
-              </label>
-              <input
-                type="text"
-                id="projectGoal"
-                name="projectGoal"
-                value={formData.projectGoal}
-                onChange={handleInputChange}
-                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="What do you want to achieve?"
-              />
+            {/* Timeline Generation */}
+            <div className="form-section">
+              <h3 className="form-section-title">
+                <span className="material-symbols-outlined">timeline</span>
+                Timeline Generation
+              </h3>
+              <p className="form-section-description">
+                Upload a markdown file to automatically generate timeline events from H1 headers.
+              </p>
+              
+              <div className="timeline-upload-container">
+                <MarkdownUploader
+                  onFileProcessed={handleFileProcessed}
+                  onError={handleFileError}
+                  onClear={handleFileClear}
+                  currentFile={uploadedFile}
+                />
+                
+                {timelineError && (
+                  <div className="timeline-error">
+                    <span className="material-symbols-outlined">error</span>
+                    <p>{timelineError}</p>
+                  </div>
+                )}
+                
+                {markdownResult && markdownResult.headers.length > 0 && (
+                  <div className="timeline-generation">
+                    <TimelineGenerator
+                      headers={markdownResult.headers}
+                      onTimelineGenerated={handleTimelineGenerated}
+                    />
+                    
+                    {timelineEvents.length > 0 && (
+                      <TimelinePreview
+                        events={timelineEvents}
+                        markdownContent={markdownResult.content}
+                        onEventsModified={handleEventsModified}
+                      />
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Project Details */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label htmlFor="status" className="block text-sm font-medium text-gray-300 mb-2">
-                  Status
-                </label>
-                <select
-                  id="status"
-                  name="status"
-                  value={formData.status}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="PLANNING">Planning</option>
-                  <option value="IN_PROGRESS">In Progress</option>
-                  <option value="ON_HOLD">On Hold</option>
-                  <option value="COMPLETED">Completed</option>
-                  <option value="CANCELLED">Cancelled</option>
-                </select>
-              </div>
+            <div className="form-section">
+              <h3 className="form-section-title">Project Details</h3>
+              <div className="form-grid">
+                <div className="form-field">
+                  <label htmlFor="status" className="form-label">
+                    Status
+                  </label>
+                  <select
+                    id="status"
+                    name="status"
+                    value={formData.status}
+                    onChange={handleInputChange}
+                    className="form-input form-select"
+                  >
+                    <option value="PLANNING">Planning</option>
+                    <option value="IN_PROGRESS">In Progress</option>
+                    <option value="ON_HOLD">On Hold</option>
+                    <option value="COMPLETED">Completed</option>
+                    <option value="CANCELLED">Cancelled</option>
+                  </select>
+                </div>
 
-              <div>
-                <label htmlFor="priority" className="block text-sm font-medium text-gray-300 mb-2">
-                  Priority
-                </label>
-                <select
-                  id="priority"
-                  name="priority"
-                  value={formData.priority}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="LOW">Low</option>
-                  <option value="MEDIUM">Medium</option>
-                  <option value="HIGH">High</option>
-                  <option value="URGENT">Urgent</option>
-                </select>
+                <div className="form-field">
+                  <label htmlFor="priority" className="form-label">
+                    Priority
+                  </label>
+                  <select
+                    id="priority"
+                    name="priority"
+                    value={formData.priority}
+                    onChange={handleInputChange}
+                    className="form-input form-select"
+                  >
+                    <option value="LOW">Low</option>
+                    <option value="MEDIUM">Medium</option>
+                    <option value="HIGH">High</option>
+                    <option value="URGENT">Urgent</option>
+                  </select>
+                </div>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label htmlFor="startDate" className="block text-sm font-medium text-gray-300 mb-2">
-                  Start Date
-                </label>
-                <input
-                  type="date"
-                  id="startDate"
-                  name="startDate"
-                  value={formData.startDate}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-
-              <div>
-                <label htmlFor="endDate" className="block text-sm font-medium text-gray-300 mb-2">
-                  End Date
-                </label>
-                <input
-                  type="date"
-                  id="endDate"
-                  name="endDate"
-                  value={formData.endDate}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label htmlFor="projectValue" className="block text-sm font-medium text-gray-300 mb-2">
-                  Project Value ($)
-                </label>
-                <input
-                  type="number"
-                  id="projectValue"
-                  name="projectValue"
-                  value={formData.projectValue}
-                  onChange={handleInputChange}
-                  min="0"
-                  step="0.01"
-                  className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="0.00"
-                />
-              </div>
-
-              <div>
-                <label htmlFor="website" className="block text-sm font-medium text-gray-300 mb-2">
-                  Website/URL
-                </label>
-                <input
-                  type="url"
-                  id="website"
-                  name="website"
-                  value={formData.website}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="https://example.com"
-                />
-              </div>
-            </div>
 
             {/* Form Actions */}
-            <div className="flex items-center justify-end space-x-4 pt-6 border-t border-gray-700">
+            <div className="form-actions">
               <button
                 type="button"
                 onClick={handleCancel}
-                className="px-6 py-2 text-gray-300 hover:text-white transition-colors"
+                className="form-btn form-btn-secondary"
                 disabled={loading}
               >
                 Cancel
@@ -275,14 +292,13 @@ export default function NewProjectPage() {
               <button
                 type="submit"
                 disabled={loading || !formData.name.trim()}
-                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+                className="form-btn form-btn-primary"
               >
                 {loading && <span className="material-symbols-outlined animate-spin text-sm">refresh</span>}
-                {loading ? 'Creating...' : 'Create Project'}
+                {loading ? 'Creating...' : `Create Project${timelineEvents.length > 0 ? ` with ${timelineEvents.length} Events` : ''}`}
               </button>
             </div>
           </form>
-        </div>
       </div>
     </div>
   )

@@ -1,4 +1,16 @@
 import { useState, useEffect } from 'react'
+import { TimelineEvent } from '@/lib/markdownParser'
+
+export interface ApiTimelineEvent {
+  id: string
+  projectId: string
+  title: string
+  description: string | null
+  date: string
+  type: string
+  createdAt: string
+  updatedAt: string
+}
 
 export interface ApiProject {
   id: string
@@ -21,11 +33,16 @@ export interface ApiProject {
     name: string | null
     email: string | null
   }
+  timelineEvents?: ApiTimelineEvent[]
   // Phase 1: Count fields removed due to simplified relations
   // _count: {
   //   tasks: number
   //   members: number
   // }
+}
+
+export interface CreateProjectData extends Partial<ApiProject> {
+  timelineEvents?: TimelineEvent[]
 }
 
 // Note: Mock data removed - now using real database API
@@ -56,7 +73,7 @@ export function useProjects() {
     }
   }
 
-  const createProject = async (projectData: Partial<ApiProject>) => {
+  const createProject = async (projectData: CreateProjectData) => {
     try {
       const response = await fetch('/api/projects', {
         method: 'POST',
