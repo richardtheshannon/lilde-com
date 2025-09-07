@@ -19,9 +19,9 @@ export interface ApiProject {
   projectGoal: string | null
   projectValue: number | null
   website: string | null
-  status: 'PLANNING' | 'IN_PROGRESS' | 'ON_HOLD' | 'COMPLETED' | 'CANCELLED'
-  priority: 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT'
-  projectType: 'DEVELOPMENT' | 'DESIGN' | 'MARKETING' | 'RESEARCH' | 'OTHER'
+  status: string
+  priority: string
+  projectType: string
   startDate: string | null
   endDate: string | null
   budget?: number | null
@@ -34,11 +34,6 @@ export interface ApiProject {
     email: string | null
   }
   timelineEvents?: ApiTimelineEvent[]
-  // Phase 1: Count fields removed due to simplified relations
-  // _count: {
-  //   tasks: number
-  //   members: number
-  // }
 }
 
 export interface CreateProjectData extends Omit<Partial<ApiProject>, 'timelineEvents'> {

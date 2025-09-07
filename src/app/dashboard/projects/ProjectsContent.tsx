@@ -227,66 +227,63 @@ export default function ProjectsContent() {
   }
 
   return (
-    <div className="flex min-h-screen">
-      <main className="main-content-left">
-        <div className="p-6">
-          {/* Header with Create Button */}
-          <div className="mb-6 flex justify-between items-center">
-            <div>
-              <h1 className="text-3xl font-bold text-white mb-2">Projects</h1>
-              <p className="text-gray-400">Manage and track all your projects</p>
-            </div>
-            <button 
-              onClick={() => router.push('/dashboard/projects/new')}
-              className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
-            >
-              <span className="material-symbols-outlined">add</span>
-              New Project
-            </button>
+    <div className="safe-margin">
+      <div className="create-project-container">
+        {/* Header with Create Button */}
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h1 className="create-project-title">Projects</h1>
+            <p className="create-project-subtitle">Manage and track all your projects</p>
           </div>
+          <button 
+            onClick={() => router.push('/dashboard/projects/new')}
+            className="form-btn form-btn-primary flex items-center gap-2"
+          >
+            <span className="material-symbols-outlined">add</span>
+            New Project
+          </button>
+        </div>
 
-          {/* Statistics Cards */}
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
-            <div className="bg-gray-800 p-4 rounded-lg border border-gray-700">
-              <div className="text-2xl font-bold text-white">{statistics.total}</div>
-              <div className="text-sm text-gray-400">Total Projects</div>
+        {/* Statistics Cards */}
+        <div className="form-section">
+          <h3 className="form-section-title">
+            <span className="material-symbols-outlined">analytics</span>
+            Project Statistics
+          </h3>
+          <div className="stats-grid">
+            <div className="stats-card">
+              <div className="stats-value">{statistics.total}</div>
+              <div className="stats-label">Total Projects</div>
             </div>
-            <div className="bg-gray-800 p-4 rounded-lg border border-gray-700">
-              <div className="text-2xl font-bold text-blue-400">{statistics.active}</div>
-              <div className="text-sm text-gray-400">Active</div>
+            <div className="stats-card">
+              <div className="stats-value stats-value-blue">{statistics.active}</div>
+              <div className="stats-label">Active</div>
             </div>
-            <div className="bg-gray-800 p-4 rounded-lg border border-gray-700">
-              <div className="text-2xl font-bold text-green-400">{statistics.completed}</div>
-              <div className="text-sm text-gray-400">Completed</div>
+            <div className="stats-card">
+              <div className="stats-value stats-value-green">{statistics.completed}</div>
+              <div className="stats-label">Completed</div>
             </div>
-            <div className="bg-gray-800 p-4 rounded-lg border border-gray-700">
-              <div className="text-2xl font-bold text-gray-400">{statistics.planning}</div>
-              <div className="text-sm text-gray-400">Planning</div>
+            <div className="stats-card">
+              <div className="stats-value stats-value-gray">{statistics.planning}</div>
+              <div className="stats-label">Planning</div>
             </div>
-            <div className="bg-gray-800 p-4 rounded-lg border border-gray-700">
-              <div className="text-2xl font-bold text-yellow-400">{statistics.onHold}</div>
-              <div className="text-sm text-gray-400">On Hold</div>
-            </div>
-            <div className="bg-gray-800 p-4 rounded-lg border border-gray-700">
-              <div className="text-xl font-bold text-purple-400">{formatCurrency(statistics.totalBudget)}</div>
-              <div className="text-sm text-gray-400">Total Value</div>
+            <div className="stats-card">
+              <div className="stats-value stats-value-yellow">{statistics.onHold}</div>
+              <div className="stats-label">On Hold</div>
             </div>
           </div>
+        </div>
 
-          {/* Filters and Search */}
-          <div className="bg-gray-800 p-4 rounded-lg border border-gray-700 mb-6">
-            <div className="flex flex-wrap gap-4">
-              <div className="flex-1 min-w-[200px]">
-                <input
-                  type="text"
-                  placeholder="Search projects..."
-                  className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-              </div>
+        {/* Filters and Search */}
+        <div className="form-section">
+          <h3 className="form-section-title">
+            <span className="material-symbols-outlined">filter_list</span>
+            Filter & Search
+          </h3>
+          <div className="filter-controls">
+            <div className="filter-selects-row">
               <select
-                className="px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="form-input form-select"
                 value={filterStatus}
                 onChange={(e) => setFilterStatus(e.target.value)}
               >
@@ -297,7 +294,7 @@ export default function ProjectsContent() {
                 <option value="completed">Completed</option>
               </select>
               <select
-                className="px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="form-input form-select"
                 value={filterPriority}
                 onChange={(e) => setFilterPriority(e.target.value)}
               >
@@ -308,7 +305,7 @@ export default function ProjectsContent() {
                 <option value="critical">Critical</option>
               </select>
               <select
-                className="px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="form-input form-select"
                 value={filterType}
                 onChange={(e) => setFilterType(e.target.value)}
               >
@@ -320,143 +317,160 @@ export default function ProjectsContent() {
                 <option value="consulting">Consulting</option>
               </select>
             </div>
+            <div className="filter-search">
+              <input
+                type="text"
+                placeholder="Search projects..."
+                className="form-input"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
           </div>
+        </div>
 
-          {/* Projects Table */}
-          <div className="bg-gray-800 rounded-lg border border-gray-700 overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-gray-900 border-b border-gray-700">
+        {/* Projects Table */}
+        <div className="form-section">
+          <h3 className="form-section-title">
+            <span className="material-symbols-outlined">folder_open</span>
+            All Projects
+          </h3>
+          <div className="projects-table-container">
+            <div className="table-wrapper">
+              <table className="projects-table">
+                <thead className="table-header">
                   <tr>
-                    <th className="px-6 py-3 text-left">
+                    <th className="table-cell">
                       <button
-                        className="text-xs font-medium text-gray-400 uppercase tracking-wider hover:text-white"
+                        className="table-header-btn"
                         onClick={() => handleSort('name')}
                       >
                         Project Name {sortField === 'name' && (sortDirection === 'asc' ? '↑' : '↓')}
                       </button>
                     </th>
-                    <th className="px-6 py-3 text-left">
+                    <th className="table-cell">
                       <button
-                        className="text-xs font-medium text-gray-400 uppercase tracking-wider hover:text-white"
+                        className="table-header-btn"
                         onClick={() => handleSort('status')}
                       >
                         Status {sortField === 'status' && (sortDirection === 'asc' ? '↑' : '↓')}
                       </button>
                     </th>
-                    <th className="px-6 py-3 text-left">
+                    <th className="table-cell">
                       <button
-                        className="text-xs font-medium text-gray-400 uppercase tracking-wider hover:text-white"
+                        className="table-header-btn"
                         onClick={() => handleSort('priority')}
                       >
                         Priority {sortField === 'priority' && (sortDirection === 'asc' ? '↑' : '↓')}
                       </button>
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                    <th className="table-cell">
                       Type
                     </th>
-                    <th className="px-6 py-3 text-left">
+                    <th className="table-cell">
                       <button
-                        className="text-xs font-medium text-gray-400 uppercase tracking-wider hover:text-white"
+                        className="table-header-btn"
                         onClick={() => handleSort('startDate')}
                       >
                         Start Date {sortField === 'startDate' && (sortDirection === 'asc' ? '↑' : '↓')}
                       </button>
                     </th>
-                    <th className="px-6 py-3 text-left">
+                    <th className="table-cell">
                       <button
-                        className="text-xs font-medium text-gray-400 uppercase tracking-wider hover:text-white"
+                        className="table-header-btn"
                         onClick={() => handleSort('progress')}
                       >
                         Progress {sortField === 'progress' && (sortDirection === 'asc' ? '↑' : '↓')}
                       </button>
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                    <th className="table-cell">
                       Team
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                    <th className="table-cell">
                       Actions
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-700">
+                <tbody className="table-body">
                   {filteredAndSortedProjects.map(project => (
-                    <tr key={project.id} className="hover:bg-gray-750 transition-colors">
-                      <td className="px-6 py-4">
+                    <tr key={project.id} className="table-row">
+                      <td className="table-cell">
                         <div>
-                          <div className="text-sm font-medium text-white">{project.name}</div>
-                          <div className="text-sm text-gray-400 truncate max-w-xs">{project.description}</div>
+                          <div className="project-name">{project.name}</div>
+                          <div className="project-description">{project.description}</div>
                         </div>
                       </td>
-                      <td className="px-6 py-4">
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusBadge(project.status)}`}>
+                      <td className="table-cell">
+                        <span className={`status-badge ${getStatusBadge(project.status)}`}>
                           {project.status.replace('_', ' ')}
                         </span>
                       </td>
-                      <td className="px-6 py-4">
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getPriorityBadge(project.priority)}`}>
+                      <td className="table-cell">
+                        <span className={`priority-badge ${getPriorityBadge(project.priority)}`}>
                           {project.priority}
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-300">
+                      <td className="table-cell table-text">
                         {project.type.replace('_', ' ')}
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-300">
+                      <td className="table-cell table-text">
                         {formatDate(project.startDate)}
                       </td>
-                      <td className="px-6 py-4">
-                        <div className="w-full bg-gray-700 rounded-full h-2">
-                          <div 
-                            className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                            style={{ width: `${project.progress}%` }}
-                          />
+                      <td className="table-cell">
+                        <div className="progress-container">
+                          <div className="progress-bar">
+                            <div 
+                              className="progress-fill"
+                              style={{ width: `${project.progress}%` }}
+                            />
+                          </div>
+                          <span className="progress-text">{project.progress}%</span>
                         </div>
-                        <span className="text-xs text-gray-400 mt-1">{project.progress}%</span>
                       </td>
-                      <td className="px-6 py-4">
-                        <div className="flex -space-x-2">
+                      <td className="table-cell">
+                        <div className="team-members">
                           {project.teamMembers.slice(0, 3).map((member, index) => (
                             <div
                               key={index}
-                              className="w-8 h-8 bg-gray-600 rounded-full border-2 border-gray-800 flex items-center justify-center"
+                              className="team-avatar"
                               title={member}
                             >
-                              <span className="text-xs text-white">
+                              <span className="team-initial">
                                 {member.charAt(0).toUpperCase()}
                               </span>
                             </div>
                           ))}
                           {project.teamMembers.length > 3 && (
-                            <div className="w-8 h-8 bg-gray-700 rounded-full border-2 border-gray-800 flex items-center justify-center">
-                              <span className="text-xs text-gray-300">
+                            <div className="team-avatar team-avatar-more">
+                              <span className="team-initial">
                                 +{project.teamMembers.length - 3}
                               </span>
                             </div>
                           )}
                         </div>
                       </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center space-x-2">
+                      <td className="table-cell">
+                        <div className="action-buttons">
                           <button 
                             onClick={() => router.push(`/dashboard/projects/${project.id}`)}
-                            className="text-gray-400 hover:text-white"
+                            className="action-btn action-btn-view"
                             title="View Details"
                           >
-                            <span className="material-symbols-outlined text-20">visibility</span>
+                            <span className="material-symbols-outlined">visibility</span>
                           </button>
                           <button 
                             onClick={() => router.push(`/dashboard/projects/${project.id}/edit`)}
-                            className="text-gray-400 hover:text-white"
+                            className="action-btn action-btn-edit"
                             title="Edit"
                           >
-                            <span className="material-symbols-outlined text-20">edit</span>
+                            <span className="material-symbols-outlined">edit</span>
                           </button>
                           <button 
                             onClick={() => handleDeleteProject(project.id)}
-                            className="text-gray-400 hover:text-red-400"
+                            className="action-btn action-btn-delete"
                             title="Delete"
                           >
-                            <span className="material-symbols-outlined text-20">delete</span>
+                            <span className="material-symbols-outlined">delete</span>
                           </button>
                         </div>
                       </td>
@@ -465,50 +479,19 @@ export default function ProjectsContent() {
                 </tbody>
               </table>
               {filteredAndSortedProjects.length === 0 && (
-                <div className="text-center py-12 text-gray-400">
-                  {searchTerm || filterStatus !== 'all' || filterPriority !== 'all' || filterType !== 'all' 
-                    ? 'No projects match your filters' 
-                    : 'No projects yet. Create your first project!'}
+                <div className="empty-state">
+                  <span className="material-symbols-outlined empty-icon">folder_open</span>
+                  <div className="empty-text">
+                    {searchTerm || filterStatus !== 'all' || filterPriority !== 'all' || filterType !== 'all' 
+                      ? 'No projects match your filters' 
+                      : 'No projects yet. Create your first project!'}
+                  </div>
                 </div>
               )}
             </div>
           </div>
         </div>
-      </main>
-
-      <aside className="main-content-right">
-        <div className="p-6">
-          <h2 className="text-xl font-bold text-white mb-4">Quick Stats</h2>
-          <div className="space-y-4">
-            <div className="bg-gray-800 p-4 rounded-lg border border-gray-700">
-              <h3 className="text-sm text-gray-400 mb-2">Completion Rate</h3>
-              <div className="text-2xl font-bold text-green-400">
-                {statistics.total > 0 
-                  ? Math.round((statistics.completed / statistics.total) * 100) 
-                  : 0}%
-              </div>
-            </div>
-            <div className="bg-gray-800 p-4 rounded-lg border border-gray-700">
-              <h3 className="text-sm text-gray-400 mb-2">Active Projects</h3>
-              <div className="space-y-2 mt-2">
-                {projects
-                  .filter(p => p.status === 'active')
-                  .slice(0, 3)
-                  .map(project => (
-                    <div key={project.id} className="text-sm">
-                      <div className="text-white">{project.name}</div>
-                      <div className="text-gray-500 text-xs">{project.progress}% complete</div>
-                    </div>
-                  ))}
-              </div>
-            </div>
-            <div className="bg-gray-800 p-4 rounded-lg border border-gray-700">
-              <h3 className="text-sm text-gray-400 mb-2">Recent Activity</h3>
-              <div className="text-sm text-gray-500">No recent activity</div>
-            </div>
-          </div>
-        </div>
-      </aside>
+      </div>
     </div>
   )
 }

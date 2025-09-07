@@ -6,8 +6,11 @@ const prisma = new PrismaClient()
 
 // GET /api/projects - Get all projects with relations
 export async function GET(request: NextRequest) {
+  console.log('GET /api/projects - Request received')
   try {
+    console.log('Getting session...')
     const session = await getSession()
+    console.log('Session result:', session ? 'exists' : 'null')
     
     // For development, allow access without session for testing
     // In production, uncomment the following lines:
@@ -15,6 +18,7 @@ export async function GET(request: NextRequest) {
     //   return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     // }
 
+    console.log('Fetching projects from database...')
     const projects = await prisma.project.findMany({
       // Filter by user when authentication is fully implemented
       // where: {
@@ -27,20 +31,20 @@ export async function GET(request: NextRequest) {
         owner: {
           select: { id: true, name: true, email: true }
         },
-        // Phase 1: Count fields removed due to simplified relations
-        // _count: {
-        //   select: { 
-        //     tasks: true,
-        //     members: true 
-        //   }
-        // }
+        timelineEvents: {
+          orderBy: { date: 'asc' }
+        }
       },
       orderBy: { createdAt: 'desc' }
     })
 
+    console.log(`Found ${projects.length} projects`)
+    console.log('Projects data:', projects)
+    
     return NextResponse.json(projects)
   } catch (error) {
     console.error('Projects GET error:', error)
+    console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace')
     return NextResponse.json(
       { error: "Failed to fetch projects", details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
