@@ -1,5 +1,5 @@
 {
-  "name": "hla-dataspur-v1",
+  "name": "lilde-com",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
@@ -19,10 +19,10 @@
     "dev:fresh": "rm -rf .next && npm run dev",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["nextjs", "project-management", "timeline", "typescript", "postgresql"],
+  "author": "Richard Shannon",
   "license": "ISC",
-  "description": "",
+  "description": "Full-stack Next.js project management application with timeline generation and PostgreSQL backend",
   "dependencies": {
     "@hookform/resolvers": "^5.2.1",
     "@prisma/client": "^5.7.0",
